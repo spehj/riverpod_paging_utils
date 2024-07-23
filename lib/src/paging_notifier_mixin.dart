@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_paging_utils/src/paging_data.dart';
@@ -10,7 +11,7 @@ abstract interface class PagingNotifierMixin<D extends PagingData<T>, T> {
   set state(AsyncValue<D> newState);
   AsyncNotifierProviderRef<D> get ref;
 
-  Future<void> loadNext();
+  Future<void> loadNext({required BuildContext context, required String clientId});
   void forceRefresh();
 }
 
@@ -23,7 +24,7 @@ abstract mixin class PagePagingNotifierMixin<T> implements PagingNotifierMixin<P
 
   /// Loads the next page of data.
   @override
-  Future<void> loadNext() async {
+  Future<void> loadNext({required BuildContext context, required String clientId}) async {
     final value = state.valueOrNull;
     if (value == null) {
       return;
@@ -103,7 +104,7 @@ abstract mixin class CursorPagingNotifierMixin<T> implements PagingNotifierMixin
 
   /// Loads the next set of data based on the cursor.
   @override
-  Future<void> loadNext() async {
+  Future<void> loadNext({required BuildContext context, required String clientId}) async {
     final value = state.valueOrNull;
     if (value == null) {
       return;

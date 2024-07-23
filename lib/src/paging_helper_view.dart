@@ -16,13 +16,13 @@ import 'package:visibility_detector/visibility_detector.dart';
 /// 6. Supports pull-to-refresh functionality.
 ///
 /// You can customize the appearance of the loading view, error view, and endItemView using [PagingHelperViewTheme].
-final class PagingHelperView<D extends PagingData<I>, I>
-    extends ConsumerWidget {
+final class PagingHelperView<D extends PagingData<I>, I> extends ConsumerWidget {
   const PagingHelperView({
     required this.provider,
     required this.futureRefreshable,
     required this.notifierRefreshable,
     required this.contentBuilder,
+    this.clientId = "",
     this.showSecondPageError = true,
     super.key,
   });
@@ -30,12 +30,12 @@ final class PagingHelperView<D extends PagingData<I>, I>
   final ProviderListenable<AsyncValue<D>> provider;
   final Refreshable<Future<D>> futureRefreshable;
   final Refreshable<PagingNotifierMixin<D, I>> notifierRefreshable;
+  final String clientId;
 
   /// Specifies a function that returns a widget to display when data is available.
   /// endItemView is a widget to detect when the last displayed item is visible.
   /// If endItemView is non-null, it is displayed at the end of the list.
-  final Widget Function(D data, int widgetCount, Widget endItemView)
-      contentBuilder;
+  final Widget Function(D data, int widgetCount, Widget endItemView) contentBuilder;
 
   final bool showSecondPageError;
 
@@ -76,21 +76,19 @@ final class PagingHelperView<D extends PagingData<I>, I>
                 // Display a widget to detect when the last element is reached
                 // if there are more pages and no errors
                 (true, false, _) => _EndVDLoadingItemView(
-                    onScrollEnd: () => ref.read(notifierRefreshable).loadNext(),
+                    onScrollEnd: () => ref.read(notifierRefreshable).loadNext(context: context, clientId: clientId),
                   ),
-                (true, true, false) when showSecondPageError =>
-                  _EndErrorItemView(
+                (true, true, false) when showSecondPageError => _EndErrorItemView(
                     error: error,
                     onRetryButtonPressed: () =>
-                        ref.read(notifierRefreshable).loadNext(),
+                        ref.read(notifierRefreshable).loadNext(context: context, clientId: clientId),
                   ),
                 (true, true, true) => const _EndLoadingItemView(),
                 _ => const SizedBox.shrink(),
               },
             );
 
-            final enableRefreshIndicator =
-                theme?.enableRefreshIndicator ?? true;
+            final enableRefreshIndicator = theme?.enableRefreshIndicator ?? true;
 
             if (enableRefreshIndicator) {
               return RefreshIndicator(
@@ -223,8 +221,7 @@ extension _AsyncValueX<T> on AsyncValue<T> {
       skipLoadingOnReload: skipLoadingOnReload,
       skipLoadingOnRefresh: skipLoadingOnRefresh,
       skipError: skipError,
-      data: (d) =>
-          data(d, hasError: hasError, isLoading: isLoading, error: this.error),
+      data: (d) => data(d, hasError: hasError, isLoading: isLoading, error: this.error),
       error: error,
       loading: loading,
     );
