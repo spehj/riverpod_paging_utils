@@ -1,5 +1,6 @@
 import 'package:example/data/sample_item.dart';
 import 'package:example/repository/sample_repository.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod_paging_utils/riverpod_paging_utils.dart';
@@ -7,8 +8,7 @@ import 'package:riverpod_paging_utils/riverpod_paging_utils.dart';
 part 'paging_method_screen.g.dart';
 
 @riverpod
-class PageBasedNotifier extends _$PageBasedNotifier
-    with PagePagingNotifierMixin<SampleItem> {
+class PageBasedNotifier extends _$PageBasedNotifier with PagePagingNotifierMixin<SampleItem> {
   @override
   Future<PagePagingData<SampleItem>> build() => fetch(page: 1);
 
@@ -29,18 +29,19 @@ class PageBasedNotifier extends _$PageBasedNotifier
 }
 
 @riverpod
-class OffsetBasedNotifier extends _$OffsetBasedNotifier
-    with OffsetPagingNotifierMixin<SampleItem> {
+class OffsetBasedNotifier extends _$OffsetBasedNotifier with OffsetPagingNotifierMixin<SampleItem> {
   @override
-  Future<OffsetPagingData<SampleItem>> build() => fetch(offset: 0);
+  Future<OffsetPagingData<SampleItem>> build({required BuildContext context, required String clientId}) =>
+      fetch(offset: 0, context: context, clientId: clientId);
 
   @override
   Future<OffsetPagingData<SampleItem>> fetch({
     required int offset,
+    required BuildContext context,
+    required String clientId,
   }) async {
     final repository = ref.read(sampleRepositoryProvider);
-    final (items, hasMore) =
-        await repository.getByOffset(offset: offset, limit: 75);
+    final (items, hasMore) = await repository.getByOffset(offset: offset, limit: 75);
     ref.keepAlive();
 
     return OffsetPagingData(
@@ -52,8 +53,7 @@ class OffsetBasedNotifier extends _$OffsetBasedNotifier
 }
 
 @riverpod
-class CursorBasedNotifier extends _$CursorBasedNotifier
-    with CursorPagingNotifierMixin<SampleItem> {
+class CursorBasedNotifier extends _$CursorBasedNotifier with CursorPagingNotifierMixin<SampleItem> {
   @override
   Future<CursorPagingData<SampleItem>> build() => fetch(cursor: null);
 
@@ -110,8 +110,7 @@ class PagingMethodScreen extends StatelessWidget {
               provider: pageBasedNotifierProvider,
               futureRefreshable: pageBasedNotifierProvider.future,
               notifierRefreshable: pageBasedNotifierProvider.notifier,
-              contentBuilder: (data, widgetCount, endItemView) =>
-                  ListView.builder(
+              contentBuilder: (data, widgetCount, endItemView) => ListView.builder(
                 key: const PageStorageKey<String>('page'),
                 itemCount: widgetCount,
                 itemBuilder: (context, index) {
@@ -134,8 +133,7 @@ class PagingMethodScreen extends StatelessWidget {
               provider: offsetBasedNotifierProvider,
               futureRefreshable: offsetBasedNotifierProvider.future,
               notifierRefreshable: offsetBasedNotifierProvider.notifier,
-              contentBuilder: (data, widgetCount, endItemView) =>
-                  ListView.builder(
+              contentBuilder: (data, widgetCount, endItemView) => ListView.builder(
                 key: const PageStorageKey<String>('offset'),
                 itemCount: widgetCount,
                 itemBuilder: (context, index) {
@@ -158,8 +156,7 @@ class PagingMethodScreen extends StatelessWidget {
               provider: cursorBasedNotifierProvider,
               futureRefreshable: cursorBasedNotifierProvider.future,
               notifierRefreshable: cursorBasedNotifierProvider.notifier,
-              contentBuilder: (data, widgetCount, endItemView) =>
-                  ListView.builder(
+              contentBuilder: (data, widgetCount, endItemView) => ListView.builder(
                 key: const PageStorageKey<String>('cursor'),
                 itemCount: widgetCount,
                 itemBuilder: (context, index) {

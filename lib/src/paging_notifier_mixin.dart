@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_paging_utils/src/paging_data.dart';
@@ -15,8 +17,7 @@ abstract interface class PagingNotifierMixin<D extends PagingData<T>, T> {
 /// A mixin for page-based pagination using [PagePagingData].
 ///
 /// Use this mixin when using @riverpod
-abstract mixin class PagePagingNotifierMixin<T>
-    implements PagingNotifierMixin<PagePagingData<T>, T> {
+abstract mixin class PagePagingNotifierMixin<T> implements PagingNotifierMixin<PagePagingData<T>, T> {
   /// Fetches the paginated data for the specified [page].
   Future<PagePagingData<T>> fetch({required int page});
 
@@ -56,14 +57,13 @@ abstract mixin class PagePagingNotifierMixin<T>
 /// A mixin for offset-based pagination using [OffsetPagingData].
 ///
 /// Use this mixin when using @riverpod
-abstract mixin class OffsetPagingNotifierMixin<T>
-    implements PagingNotifierMixin<OffsetPagingData<T>, T> {
+abstract mixin class OffsetPagingNotifierMixin<T> implements PagingNotifierMixin<OffsetPagingData<T>, T> {
   /// Fetches the paginated data for the specified [offset].
-  Future<OffsetPagingData<T>> fetch({required int offset});
+  Future<OffsetPagingData<T>> fetch({required int offset, required BuildContext context, required String clientId});
 
   /// Loads the next set of data based on the offset.
   @override
-  Future<void> loadNext() async {
+  Future<void> loadNext({required BuildContext context, required String clientId}) async {
     final value = state.valueOrNull;
     if (value == null) {
       return;
@@ -74,7 +74,7 @@ abstract mixin class OffsetPagingNotifierMixin<T>
 
       state = await state.guardPreservingPreviousOnError(
         () async {
-          final next = await fetch(offset: value.offset);
+          final next = await fetch(offset: value.offset, context: context, clientId: clientId);
 
           return value.copyWith(
             items: [...value.items, ...next.items],
@@ -97,8 +97,7 @@ abstract mixin class OffsetPagingNotifierMixin<T>
 /// A mixin for cursor-based pagination using [CursorPagingData].
 ///
 /// Use this mixin when using @riverpod
-abstract mixin class CursorPagingNotifierMixin<T>
-    implements PagingNotifierMixin<CursorPagingData<T>, T> {
+abstract mixin class CursorPagingNotifierMixin<T> implements PagingNotifierMixin<CursorPagingData<T>, T> {
   /// Fetches the paginated data for the specified [cursor].
   Future<CursorPagingData<T>> fetch({required String? cursor});
 
