@@ -130,9 +130,9 @@ class PagingMethodScreen extends StatelessWidget {
               ),
             ),
             PagingHelperView(
-              provider: offsetBasedNotifierProvider,
-              futureRefreshable: offsetBasedNotifierProvider.future,
-              notifierRefreshable: offsetBasedNotifierProvider.notifier,
+              provider: offsetBasedNotifierProvider(context: context, clientId: ""),
+              futureRefreshable: offsetBasedNotifierProvider(context: context, clientId: "").future,
+              notifierRefreshable: offsetBasedNotifierProvider(context: context, clientId: "").notifier,
               contentBuilder: (data, widgetCount, endItemView) => ListView.builder(
                 key: const PageStorageKey<String>('offset'),
                 itemCount: widgetCount,
