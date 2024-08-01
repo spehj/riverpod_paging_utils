@@ -1,6 +1,5 @@
 import 'package:example/data/sample_item.dart';
 import 'package:example/repository/sample_repository.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod_paging_utils/riverpod_paging_utils.dart';
@@ -10,11 +9,13 @@ part 'paging_method_screen.g.dart';
 @riverpod
 class PageBasedNotifier extends _$PageBasedNotifier with PagePagingNotifierMixin<SampleItem> {
   @override
-  Future<PagePagingData<SampleItem>> build() => fetch(page: 1);
+  Future<PagePagingData<SampleItem>> build({Map<String, dynamic>? parameters}) =>
+      fetch(page: 1, parameters: parameters);
 
   @override
   Future<PagePagingData<SampleItem>> fetch({
     required int page,
+    Map<String, dynamic>? parameters,
   }) async {
     final repository = ref.read(sampleRepositoryProvider);
     final (items, hasMore) = await repository.getByPage(page: page, limit: 50);
@@ -31,12 +32,14 @@ class PageBasedNotifier extends _$PageBasedNotifier with PagePagingNotifierMixin
 @riverpod
 class OffsetBasedNotifier extends _$OffsetBasedNotifier with OffsetPagingNotifierMixin<SampleItem> {
   @override
-  Future<OffsetPagingData<SampleItem>> build({required BuildContext context, Map<String, dynamic>? parameters}) =>
-      fetch(offset: 0, context: context, parameters: parameters);
+  Future<OffsetPagingData<SampleItem>> build({Map<String, dynamic>? parameters}) =>
+      fetch(offset: 0, parameters: parameters);
 
   @override
-  Future<OffsetPagingData<SampleItem>> fetch(
-      {required int offset, required BuildContext context, Map<String, dynamic>? parameters}) async {
+  Future<OffsetPagingData<SampleItem>> fetch({
+    required int offset,
+    Map<String, dynamic>? parameters,
+  }) async {
     final repository = ref.read(sampleRepositoryProvider);
     final (items, hasMore) = await repository.getByOffset(offset: offset, limit: 75);
     ref.keepAlive();
@@ -52,11 +55,12 @@ class OffsetBasedNotifier extends _$OffsetBasedNotifier with OffsetPagingNotifie
 @riverpod
 class CursorBasedNotifier extends _$CursorBasedNotifier with CursorPagingNotifierMixin<SampleItem> {
   @override
-  Future<CursorPagingData<SampleItem>> build() => fetch(cursor: null);
+  Future<CursorPagingData<SampleItem>> build({Map<String, dynamic>? parameters}) => fetch(cursor: null);
 
   @override
   Future<CursorPagingData<SampleItem>> fetch({
     required String? cursor,
+    Map<String, dynamic>? parameters,
   }) async {
     final repository = ref.read(sampleRepositoryProvider);
     final (items, nextCursor) = await repository.getByCursor(cursor);
@@ -104,9 +108,9 @@ class PagingMethodScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             PagingHelperView(
-              provider: pageBasedNotifierProvider,
-              futureRefreshable: pageBasedNotifierProvider.future,
-              notifierRefreshable: pageBasedNotifierProvider.notifier,
+              provider: pageBasedNotifierProvider(),
+              futureRefreshable: pageBasedNotifierProvider().future,
+              notifierRefreshable: pageBasedNotifierProvider().notifier,
               contentBuilder: (data, widgetCount, endItemView) => ListView.builder(
                 key: const PageStorageKey<String>('page'),
                 itemCount: widgetCount,
@@ -127,9 +131,9 @@ class PagingMethodScreen extends StatelessWidget {
               ),
             ),
             PagingHelperView(
-              provider: offsetBasedNotifierProvider(context: context, parameters: {"clientId": ''}),
-              futureRefreshable: offsetBasedNotifierProvider(context: context, parameters: {"clientId": ''}).future,
-              notifierRefreshable: offsetBasedNotifierProvider(context: context, parameters: {"clientId": ''}).notifier,
+              provider: offsetBasedNotifierProvider(),
+              futureRefreshable: offsetBasedNotifierProvider().future,
+              notifierRefreshable: offsetBasedNotifierProvider().notifier,
               contentBuilder: (data, widgetCount, endItemView) => ListView.builder(
                 key: const PageStorageKey<String>('offset'),
                 itemCount: widgetCount,
@@ -150,9 +154,9 @@ class PagingMethodScreen extends StatelessWidget {
               ),
             ),
             PagingHelperView(
-              provider: cursorBasedNotifierProvider,
-              futureRefreshable: cursorBasedNotifierProvider.future,
-              notifierRefreshable: cursorBasedNotifierProvider.notifier,
+              provider: cursorBasedNotifierProvider(),
+              futureRefreshable: cursorBasedNotifierProvider().future,
+              notifierRefreshable: cursorBasedNotifierProvider().notifier,
               contentBuilder: (data, widgetCount, endItemView) => ListView.builder(
                 key: const PageStorageKey<String>('cursor'),
                 itemCount: widgetCount,

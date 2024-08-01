@@ -6,13 +6,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'sample_repository.g.dart';
 
 @riverpod
-SampleRepository sampleRepository(SampleRepositoryRef ref) =>
-    SampleRepository();
+SampleRepository sampleRepository(SampleRepositoryRef ref) => SampleRepository();
 
 class SampleRepository {
   Future<(List<SampleItem> items, bool hasMore)> getByPage({
     required int page,
     required int limit,
+    Map<String, dynamic>? parameters,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
@@ -22,6 +22,14 @@ class SampleRepository {
           (id, name) => SampleItem(id: id.toString(), name: name),
         )
         .toList();
+
+    // Example of how to use parameters for sorting or filtering
+    if (parameters != null && parameters.containsKey('sortBy')) {
+      final sortBy = parameters['sortBy'] as String;
+      if (sortBy == 'name') {
+        items.sort((a, b) => a.name.compareTo(b.name));
+      }
+    }
 
     final hasMore = _db.length > page * limit;
 
