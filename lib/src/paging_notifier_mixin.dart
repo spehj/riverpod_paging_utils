@@ -60,8 +60,11 @@ abstract mixin class PagePagingNotifierMixin<T> implements PagingNotifierMixin<P
 /// Use this mixin when using @riverpod
 abstract mixin class OffsetPagingNotifierMixin<T> implements PagingNotifierMixin<OffsetPagingData<T>, T> {
   /// Fetches the paginated data for the specified [offset].
-  Future<OffsetPagingData<T>> fetch(
-      {required int offset, required BuildContext context, Map<String, dynamic>? parameters});
+  Future<OffsetPagingData<T>> fetch({
+    required int offset,
+    required BuildContext context,
+    Map<String, dynamic>? parameters,
+  });
 
   /// Loads the next set of data based on the offset.
   @override
