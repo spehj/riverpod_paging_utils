@@ -76,12 +76,11 @@ final class PagingHelperView<D extends PagingData<I>, I> extends ConsumerWidget 
                 // Display a widget to detect when the last element is reached
                 // if there are more pages and no errors
                 (true, false, _) => _EndVDLoadingItemView(
-                    onScrollEnd: () => ref.read(notifierRefreshable).loadNext(context: context, parameters: parameters),
+                    onScrollEnd: () => ref.read(notifierRefreshable).loadNext(parameters: parameters),
                   ),
                 (true, true, false) when showSecondPageError => _EndErrorItemView(
                     error: error,
-                    onRetryButtonPressed: () =>
-                        ref.read(notifierRefreshable).loadNext(context: context, parameters: parameters),
+                    onRetryButtonPressed: () => ref.read(notifierRefreshable).loadNext(parameters: parameters),
                   ),
                 (true, true, true) => const _EndLoadingItemView(),
                 _ => const SizedBox.shrink(),

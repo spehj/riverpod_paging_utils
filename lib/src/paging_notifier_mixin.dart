@@ -1,6 +1,3 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_paging_utils/src/paging_data.dart';
@@ -11,7 +8,7 @@ abstract interface class PagingNotifierMixin<D extends PagingData<T>, T> {
   set state(AsyncValue<D> newState);
   AsyncNotifierProviderRef<D> get ref;
 
-  Future<void> loadNext({required BuildContext context, Map<String, dynamic>? parameters});
+  Future<void> loadNext({Map<String, dynamic>? parameters});
   void forceRefresh();
 }
 
@@ -24,7 +21,7 @@ abstract mixin class PagePagingNotifierMixin<T> implements PagingNotifierMixin<P
 
   /// Loads the next page of data.
   @override
-  Future<void> loadNext({required BuildContext context, Map<String, dynamic>? parameters}) async {
+  Future<void> loadNext({Map<String, dynamic>? parameters}) async {
     final value = state.valueOrNull;
     if (value == null) {
       return;
@@ -62,13 +59,12 @@ abstract mixin class OffsetPagingNotifierMixin<T> implements PagingNotifierMixin
   /// Fetches the paginated data for the specified [offset].
   Future<OffsetPagingData<T>> fetch({
     required int offset,
-    required BuildContext context,
     Map<String, dynamic>? parameters,
   });
 
   /// Loads the next set of data based on the offset.
   @override
-  Future<void> loadNext({required BuildContext context, Map<String, dynamic>? parameters}) async {
+  Future<void> loadNext({Map<String, dynamic>? parameters}) async {
     final value = state.valueOrNull;
     if (value == null) {
       return;
@@ -79,7 +75,7 @@ abstract mixin class OffsetPagingNotifierMixin<T> implements PagingNotifierMixin
 
       state = await state.guardPreservingPreviousOnError(
         () async {
-          final next = await fetch(offset: value.offset, context: context, parameters: parameters);
+          final next = await fetch(offset: value.offset, parameters: parameters);
 
           return value.copyWith(
             items: [...value.items, ...next.items],
@@ -108,7 +104,7 @@ abstract mixin class CursorPagingNotifierMixin<T> implements PagingNotifierMixin
 
   /// Loads the next set of data based on the cursor.
   @override
-  Future<void> loadNext({required BuildContext context, Map<String, dynamic>? parameters}) async {
+  Future<void> loadNext({Map<String, dynamic>? parameters}) async {
     final value = state.valueOrNull;
     if (value == null) {
       return;
