@@ -22,7 +22,7 @@ final class PagingHelperView<D extends PagingData<I>, I> extends ConsumerWidget 
     required this.futureRefreshable,
     required this.notifierRefreshable,
     required this.contentBuilder,
-    this.clientId = "",
+    this.parameters,
     this.showSecondPageError = true,
     super.key,
   });
@@ -30,7 +30,7 @@ final class PagingHelperView<D extends PagingData<I>, I> extends ConsumerWidget 
   final ProviderListenable<AsyncValue<D>> provider;
   final Refreshable<Future<D>> futureRefreshable;
   final Refreshable<PagingNotifierMixin<D, I>> notifierRefreshable;
-  final String clientId;
+  final Map<String, dynamic>? parameters;
 
   /// Specifies a function that returns a widget to display when data is available.
   /// endItemView is a widget to detect when the last displayed item is visible.
@@ -76,12 +76,12 @@ final class PagingHelperView<D extends PagingData<I>, I> extends ConsumerWidget 
                 // Display a widget to detect when the last element is reached
                 // if there are more pages and no errors
                 (true, false, _) => _EndVDLoadingItemView(
-                    onScrollEnd: () => ref.read(notifierRefreshable).loadNext(context: context, clientId: clientId),
+                    onScrollEnd: () => ref.read(notifierRefreshable).loadNext(context: context, parameters: parameters),
                   ),
                 (true, true, false) when showSecondPageError => _EndErrorItemView(
                     error: error,
                     onRetryButtonPressed: () =>
-                        ref.read(notifierRefreshable).loadNext(context: context, clientId: clientId),
+                        ref.read(notifierRefreshable).loadNext(context: context, parameters: parameters),
                   ),
                 (true, true, true) => const _EndLoadingItemView(),
                 _ => const SizedBox.shrink(),

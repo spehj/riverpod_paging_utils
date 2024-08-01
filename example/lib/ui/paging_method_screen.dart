@@ -31,15 +31,12 @@ class PageBasedNotifier extends _$PageBasedNotifier with PagePagingNotifierMixin
 @riverpod
 class OffsetBasedNotifier extends _$OffsetBasedNotifier with OffsetPagingNotifierMixin<SampleItem> {
   @override
-  Future<OffsetPagingData<SampleItem>> build({required BuildContext context, required String clientId}) =>
-      fetch(offset: 0, context: context, clientId: clientId);
+  Future<OffsetPagingData<SampleItem>> build({required BuildContext context, Map<String, dynamic>? parameters}) =>
+      fetch(offset: 0, context: context, parameters: parameters);
 
   @override
-  Future<OffsetPagingData<SampleItem>> fetch({
-    required int offset,
-    required BuildContext context,
-    required String clientId,
-  }) async {
+  Future<OffsetPagingData<SampleItem>> fetch(
+      {required int offset, required BuildContext context, Map<String, dynamic>? parameters}) async {
     final repository = ref.read(sampleRepositoryProvider);
     final (items, hasMore) = await repository.getByOffset(offset: offset, limit: 75);
     ref.keepAlive();
@@ -130,9 +127,9 @@ class PagingMethodScreen extends StatelessWidget {
               ),
             ),
             PagingHelperView(
-              provider: offsetBasedNotifierProvider(context: context, clientId: ""),
-              futureRefreshable: offsetBasedNotifierProvider(context: context, clientId: "").future,
-              notifierRefreshable: offsetBasedNotifierProvider(context: context, clientId: "").notifier,
+              provider: offsetBasedNotifierProvider(context: context, parameters: {"clientId": ''}),
+              futureRefreshable: offsetBasedNotifierProvider(context: context, parameters: {"clientId": ''}).future,
+              notifierRefreshable: offsetBasedNotifierProvider(context: context, parameters: {"clientId": ''}).notifier,
               contentBuilder: (data, widgetCount, endItemView) => ListView.builder(
                 key: const PageStorageKey<String>('offset'),
                 itemCount: widgetCount,

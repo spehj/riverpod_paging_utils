@@ -24,7 +24,7 @@ final pageBasedNotifierProvider = AutoDisposeAsyncNotifierProvider<
 typedef _$PageBasedNotifier
     = AutoDisposeAsyncNotifier<PagePagingData<SampleItem>>;
 String _$offsetBasedNotifierHash() =>
-    r'6b45449ce9b527467817920759c9ed0814369e01';
+    r'3417e3586a9010c45d0d46cffbc14591f1fad1ef';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -50,11 +50,11 @@ class _SystemHash {
 abstract class _$OffsetBasedNotifier
     extends BuildlessAutoDisposeAsyncNotifier<OffsetPagingData<SampleItem>> {
   late final BuildContext context;
-  late final String clientId;
+  late final Map<String, dynamic>? parameters;
 
   FutureOr<OffsetPagingData<SampleItem>> build({
     required BuildContext context,
-    required String clientId,
+    Map<String, dynamic>? parameters,
   });
 }
 
@@ -71,11 +71,11 @@ class OffsetBasedNotifierFamily
   /// See also [OffsetBasedNotifier].
   OffsetBasedNotifierProvider call({
     required BuildContext context,
-    required String clientId,
+    Map<String, dynamic>? parameters,
   }) {
     return OffsetBasedNotifierProvider(
       context: context,
-      clientId: clientId,
+      parameters: parameters,
     );
   }
 
@@ -85,7 +85,7 @@ class OffsetBasedNotifierFamily
   ) {
     return call(
       context: provider.context,
-      clientId: provider.clientId,
+      parameters: provider.parameters,
     );
   }
 
@@ -110,11 +110,11 @@ class OffsetBasedNotifierProvider extends AutoDisposeAsyncNotifierProviderImpl<
   /// See also [OffsetBasedNotifier].
   OffsetBasedNotifierProvider({
     required BuildContext context,
-    required String clientId,
+    Map<String, dynamic>? parameters,
   }) : this._internal(
           () => OffsetBasedNotifier()
             ..context = context
-            ..clientId = clientId,
+            ..parameters = parameters,
           from: offsetBasedNotifierProvider,
           name: r'offsetBasedNotifierProvider',
           debugGetCreateSourceHash:
@@ -125,7 +125,7 @@ class OffsetBasedNotifierProvider extends AutoDisposeAsyncNotifierProviderImpl<
           allTransitiveDependencies:
               OffsetBasedNotifierFamily._allTransitiveDependencies,
           context: context,
-          clientId: clientId,
+          parameters: parameters,
         );
 
   OffsetBasedNotifierProvider._internal(
@@ -136,11 +136,11 @@ class OffsetBasedNotifierProvider extends AutoDisposeAsyncNotifierProviderImpl<
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.context,
-    required this.clientId,
+    required this.parameters,
   }) : super.internal();
 
   final BuildContext context;
-  final String clientId;
+  final Map<String, dynamic>? parameters;
 
   @override
   FutureOr<OffsetPagingData<SampleItem>> runNotifierBuild(
@@ -148,7 +148,7 @@ class OffsetBasedNotifierProvider extends AutoDisposeAsyncNotifierProviderImpl<
   ) {
     return notifier.build(
       context: context,
-      clientId: clientId,
+      parameters: parameters,
     );
   }
 
@@ -159,14 +159,14 @@ class OffsetBasedNotifierProvider extends AutoDisposeAsyncNotifierProviderImpl<
       override: OffsetBasedNotifierProvider._internal(
         () => create()
           ..context = context
-          ..clientId = clientId,
+          ..parameters = parameters,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         context: context,
-        clientId: clientId,
+        parameters: parameters,
       ),
     );
   }
@@ -181,14 +181,14 @@ class OffsetBasedNotifierProvider extends AutoDisposeAsyncNotifierProviderImpl<
   bool operator ==(Object other) {
     return other is OffsetBasedNotifierProvider &&
         other.context == context &&
-        other.clientId == clientId;
+        other.parameters == parameters;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, context.hashCode);
-    hash = _SystemHash.combine(hash, clientId.hashCode);
+    hash = _SystemHash.combine(hash, parameters.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -199,8 +199,8 @@ mixin OffsetBasedNotifierRef
   /// The parameter `context` of this provider.
   BuildContext get context;
 
-  /// The parameter `clientId` of this provider.
-  String get clientId;
+  /// The parameter `parameters` of this provider.
+  Map<String, dynamic>? get parameters;
 }
 
 class _OffsetBasedNotifierProviderElement
@@ -211,7 +211,8 @@ class _OffsetBasedNotifierProviderElement
   @override
   BuildContext get context => (origin as OffsetBasedNotifierProvider).context;
   @override
-  String get clientId => (origin as OffsetBasedNotifierProvider).clientId;
+  Map<String, dynamic>? get parameters =>
+      (origin as OffsetBasedNotifierProvider).parameters;
 }
 
 String _$cursorBasedNotifierHash() =>
